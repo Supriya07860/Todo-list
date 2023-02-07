@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>To-Do List</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>To-Do List</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Index</th>
+          <th>Task</th>
+          <th>Priority</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="todolist">
+        <!-- Tasks will be displayed here -->
+      </tbody>
+    </table>
+    <br />
+    <h2>Task Report</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody id="report">
+        <!-- Report will be displayed here -->
+      </tbody>
+    </table>
+    <script>
+      fetch('/todos')
+        .then(res => res.json())
+        .then(todos => {
+          const todolist = document.getElementById('todolist');
+          todos.forEach((todo, index) => {
+            let status = todo.status;
+            if (status === 'completed') {
+              status = `${status} [✔]`;
+            } else if (status === 'cancelled') {
+              status = `${status} [❌]`;
+            } else {
+              status = `${status} [ ]`;
+            }
+            todolist.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${todo.task}</td>
+                <td>${todo.priority}</td>
+                <td>${status}</td>
+              </tr>
+            `;
+          });
+        });
+      fetch('/todos/report')
+        .then(res => res.json())
+        .then(report => {
+          const reportTable = document.getElementById('report');
+          report.forEach(row => {
+            reportTable.innerHTML += `
+              <tr>
+                <td>${row._id}</td>
+                <td>${row.count}</td>
+              </tr>
+            `;
+          });
+        });
+    </script>
+  </body>
+</html>
